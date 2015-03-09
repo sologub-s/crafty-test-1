@@ -34,12 +34,22 @@ Crafty.scene("Game", function () {
     }
 
     var max_villages = 5;
-    for (var x = 0; x < Game.map_grid.width; x++) {
-        for (var y = 0; y < Game.map_grid.height; y++) {
-            if (Math.random() < .03 && Crafty('Village').length < max_villages && !this.occupied[x][y]) {
-                Crafty.e('Village').at(x, y);
-                this.occupied[x][y] = true;
-            }
+    var i = 0;
+    while (Crafty('Village').length < max_villages) {
+        var x = Crafty.math.randomInt(0, Game.map_grid.width - 1);
+        var y = Crafty.math.randomInt(0, Game.map_grid.height - 1);
+        if (!this.occupied[x][y]) {
+            Crafty.e('Village').at(x, y);
+        }
+    }
+
+    var max_towers = 10;
+    var i = 0;
+    while (Crafty('Tower').length < max_towers) {
+        var x = Crafty.math.randomInt(0, Game.map_grid.width - 1);
+        var y = Crafty.math.randomInt(0, Game.map_grid.height - 1);
+        if (!this.occupied[x][y]) {
+            Crafty.e('Tower').at(x, y);
         }
     }
 
@@ -51,8 +61,19 @@ Crafty.scene("Game", function () {
         }
     });
 
+    this.player_changed_position = this.bind('PlayerChangedPosition', function (data) {
+        for (var i = 0; i < Crafty('Tower').length; i++) {
+            /**
+             * VERY slow
+             * need to replace on math formula "whether point belongs to circle"
+             */
+            //console.log(Crafty.math.distance(data.x, data.y, Crafty('Tower').get(i).x, Crafty('Tower').get(i).y));
+        }
+    });
+
 }, function () {
     this.unbind('VillageVisited', this.show_victory);
+    this.unbind('PlayerChangedPosition', this.player_changed_position);
 });
 
 Crafty.scene('Victory', function () {
@@ -81,9 +102,10 @@ Crafty.scene('Loading', function () {
             knock: ['assets/door_knock_3x.mp3', 'assets/door_knock_3x.ogg', 'assets/door_knock_3x.aac'],
             applause: ['assets/board_room_applause.mp3', 'assets/board_room_applause.ogg', 'assets/board_room_applause.aac'],
             ring: ['assets/candy_dish_lid.mp3', 'assets/candy_dish_lid.ogg', 'assets/candy_dish_lid.aac'],
-            step_l: ['assets/sfx_step_grass_l.mp3']
+            step_l: ['assets/sfx_step_grass_l.mp3'],
+            step_r: ['assets/sfx_step_grass_r.mp3']
         },
-        images: ['assets/16x16_forest_2.gif', 'assets/hunter.png']
+        images: ['assets/16x16_forest_2.gif', 'assets/hunter.png', 'assets/tower_round.png']
     }, function(){
         Crafty.sprite(16, 'assets/16x16_forest_2.gif', {
             spr_tree:    [0, 0],
@@ -94,6 +116,9 @@ Crafty.scene('Loading', function () {
         Crafty.sprite(16, 'assets/hunter.png', {
             spr_player:  [0, 2]
         }, 0, 2);
+        Crafty.sprite(16, 'assets/tower_round.png', {
+            spr_tower:  [0, 0]
+        });
 
         Crafty.scene('Game');
     });
