@@ -20,6 +20,7 @@ Crafty.scene("Game", function () {
 
     this.player = Crafty.e('PlayerCharacter').at(5, 5);
     this.occupied[this.player.at().x][this.player.at().y] = true;
+    Crafty.viewport.follow(this.player, 0, 0);
 
     for (var x = 0; x < Game.map_grid.width; x++) {
         for (var y = 0; y < Game.map_grid.height; y++) {
@@ -40,6 +41,7 @@ Crafty.scene("Game", function () {
         var y = Crafty.math.randomInt(0, Game.map_grid.height - 1);
         if (!this.occupied[x][y]) {
             Crafty.e('Village').at(x, y);
+            this.occupied[x][y] = true;
         }
     }
 
@@ -50,6 +52,7 @@ Crafty.scene("Game", function () {
         var y = Crafty.math.randomInt(0, Game.map_grid.height - 1);
         if (!this.occupied[x][y]) {
             Crafty.e('Tower').at(x, y);
+            this.occupied[x][y] = true;
         }
     }
 
@@ -63,11 +66,6 @@ Crafty.scene("Game", function () {
 
     this.player_changed_position = this.bind('PlayerChangedPosition', function (data) {
         for (var i = 0; i < Crafty('Tower').length; i++) {
-            /**
-             * VERY slow
-             * need to replace on math formula "whether point belongs to circle"
-             */
-            //console.log(Crafty.math.distance(data.x, data.y, Crafty('Tower').get(i).x, Crafty('Tower').get(i).y));
         }
     });
 
@@ -77,10 +75,10 @@ Crafty.scene("Game", function () {
 });
 
 Crafty.scene('Victory', function () {
-    Crafty.e('2D, DOM, Text')
+    Crafty.viewport.centerOn(Crafty.e('2D, DOM, Text')
         .text('All villages visited!')
-        .attr({ x: 0, y: Game.height()/2 - 24, w: Game.width() })
-        .textFont($text_css);
+        .attr({ x: 0, y: Game.viewport.height/2 - 24, w: Game.viewport.width })
+        .textFont($text_css));
     Crafty.audio.play('applause');
     var delay = true;
     setTimeout(function() { delay = false; }, 5000);
@@ -94,7 +92,7 @@ Crafty.scene('Victory', function () {
 Crafty.scene('Loading', function () {
     Crafty.e('2D, DOM, Text')
         .text('Loading, please wait...')
-        .attr({ x: 0, y: Game.height()/2 - 24, w: Game.width() })
+        .attr({ x: 0, y: Game.viewport.height/2 - 24, w: Game.viewport.width })
         .textFont($text_css);
 
     Crafty.load({
